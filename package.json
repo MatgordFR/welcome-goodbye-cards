@@ -1,0 +1,17 @@
+{
+  "name": "azulbot",
+  "version": "1.0.0",
+  "description": "Bot Discord qui génère des images personnalisées de bienvenue et de départ pour les membres d'un serveur",
+  "license": "ISC",
+  "author": "MatgordFR",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "canvas": "^3.2.3",
+    "discord.js": "^14.26.2"
+  }
+}
