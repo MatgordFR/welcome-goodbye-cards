@@ -1,0 +1,6 @@
+# Secrets & environnement — ne JAMAIS committer
+config.json
+.env
+
+# Dépendances
+node_modules/
