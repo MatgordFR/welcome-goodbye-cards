@@ -3,8 +3,13 @@ const config = require("./config.json");
 const fs = require("fs");
 const path = require("path");
 
-if (!config.token) {
-  console.error('[ERREUR] Token Discord manquant dans config.json');
+// Validation de la config au démarrage : un message clair vaut mieux qu'un crash obscur plus loin.
+const requis = ['token', 'Salon_Bienvenue', 'Salon_Depart'];
+const manquants = requis.filter(k => !config[k] || String(config[k]).trim() === '');
+if (config.token === 'TON_TOKEN_DISCORD') manquants.push("token (c'est encore la valeur d'exemple)");
+if (manquants.length) {
+  console.error(`[CONFIG] config.json invalide — clés manquantes ou vides : ${manquants.join(', ')}.`);
+  console.error('[CONFIG] Copie config.example.json vers config.json et remplis-le.');
   process.exit(1);
 }
 

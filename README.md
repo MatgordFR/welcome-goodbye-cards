@@ -1,171 +1,121 @@
 <div align="center">
 
-# 🤖 AzulBOT
+# 🖼️ welcome-goodbye-cards
 
-### 👋 Un bot Discord qui accueille et accompagne les membres de ton serveur
+**Un bot Discord qui génère des images personnalisées de bienvenue et de départ à chaque arrivée ou sortie de membre.**
 
-<div align="center">
-    <a href="https://discord.com/users/689890476811354242">
-        <img src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white"/>
-    </a>
-    <a href="https://x.com/matgordfr">
-        <img src="https://img.shields.io/badge/X-%23000000.svg?style=for-the-badge&logo=X&logoColor=white"/>
-    </a>
-    <a href="https://github.com/MatgordFR">
-        <img src="https://img.shields.io/badge/GitHub-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"/>
-    </a>
-</div>
+[![License: ISC](https://img.shields.io/badge/Licence-ISC-blue?style=flat-square)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A5%2018-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
+[![discord.js](https://img.shields.io/badge/discord.js-v14-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.js.org)
+[![canvas](https://img.shields.io/badge/canvas-image-orange?style=flat-square)](https://www.npmjs.com/package/canvas)
+[![By MatgordFR](https://img.shields.io/badge/by-MatgordFR-111?style=flat-square&logo=github&logoColor=white)](https://github.com/MatgordFR)
 
 </div>
 
 ---
 
-## 🌟 Présentation
+## ✨ En deux mots
 
-**AzulBOT** est un bot Discord qui génère automatiquement des images personnalisées lors des arrivées et départs de membres. Il affiche l'avatar du membre, son pseudo et le compteur de membres directement sur l'image.
+`welcome-goodbye-cards` génère **une image sur mesure** à chaque événement de membre, avec **canvas** :
 
----
+- 👋 à l'**arrivée** : une carte de bienvenue (avatar + pseudo + compteur de membres) ;
+- 🚪 au **départ** : une carte d'au revoir dans le même style ;
+- 🎨 **fonds personnalisables** (tes propres `.png`) ;
+- 🛡️ **validation de la config** au lancement (message clair si un salon manque).
 
-## ✨ Fonctionnalités
+Tout est automatique : le membre arrive ou part, la carte tombe dans le bon salon.
 
-| Fonctionnalité | Description |
-|---|---|
-| 🖼️ **Image de bienvenue** | Génère une image avec l'avatar et le pseudo du nouveau membre |
-| 👋 **Image de départ** | Génère une image lors du départ d'un membre |
-| 📩 **Embed de redémarrage** | Envoie un message embed dans un salon de logs au démarrage |
-| 🎭 **Statut rotatif** | Affiche un statut Discord qui change toutes les 20 secondes |
-| ⚙️ **Config centralisée** | Toute la config dans un seul fichier `config.json` |
+## 📑 Sommaire
 
----
+- [Prérequis](#-prérequis)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Lancement](#️-lancement)
+- [Aperçu](#️-aperçu)
+- [Dépannage](#️-dépannage)
+- [Structure](#️-structure)
+- [Licence](#-licence)
 
-## 🗂️ Structure du projet
+## 🧩 Prérequis
 
-```
-📁 AzulBOT/
-├── 📄 index.js                  ← Point d'entrée, chargement des events
-├── 🔧 config.json               ← Token, couleur et IDs des salons
-├── 📦 package.json              ← Dépendances et script de démarrage
-├── 📖 README.md                 ← Ce fichier
-├── 📁 events/
-│   ├── ✅ ready.js              ← Embed de démarrage + rotation du statut
-│   ├── 👋 guildMemberAdd.js     ← Image de bienvenue
-│   └── 🚪 guildMemberRemove.js  ← Image de départ
-├── 📁 utils/
-│   └── 🎨 canvas.js            ← Génération des images (partagé)
-├── 📁 image/
-│   ├── 🖼️ Bienvenue.png         ← Fond de l'image de bienvenue
-│   └── 🖼️ Depart.png            ← Fond de l'image de départ
-└── 📁 preview/
-    ├── 🖼️ bienvenue-image.png   ← Aperçu de l'image de bienvenue
-    └── 🖼️ depart-image.png      ← Aperçu de l'image de départ
-```
+- [Node.js **18+**](https://nodejs.org)
+- Un bot créé sur le [Discord Developer Portal](https://discord.com/developers/applications)
+- L'intent privilégié **Server Members** activé (*Bot → Privileged Gateway Intents*)
 
----
+> ⚠️ Sans **Server Members Intent**, le bot ne reçoit pas les arrivées/départs de membres.
+> 💡 `canvas` installe des binaires précompilés ; sur certains Linux, des libs système (Cairo/Pango) peuvent être nécessaires.
 
 ## 📦 Installation
 
-### 1️⃣ Prérequis
-
-Avant de commencer, assure-toi d'avoir :
-
-- ✅ [Node.js v18+](https://nodejs.org/) installé
-- ✅ Un bot Discord créé sur le [Discord Developer Portal](https://discord.com/developers/applications)
-- ✅ L'intent **Server Members** activé dans le portail développeur
-
-> ⚠️ **Intent privilégié requis** — dans le Discord Developer Portal, active **Server Members Intent** sous *Bot → Privileged Gateway Intents*, sinon le bot ne recevra pas les événements d'arrivée/départ.
-
----
-
-### 2️⃣ Installer les dépendances
-
 ```bash
+git clone https://github.com/MatgordFR/welcome-goodbye-cards.git
+cd welcome-goodbye-cards
 npm install
+cp config.example.json config.json   # puis remplis config.json
 ```
-
-Cela installe automatiquement :
-
-| Package | Rôle |
-|---|---|
-| `discord.js` | Librairie principale pour interagir avec l'API Discord |
-| `canvas` | Génération des images de bienvenue et de départ |
-
----
-
-## 📸 Aperçu
-
-| Bienvenue | Départ |
-|---|---|
-| ![Bienvenue](preview/bienvenue-image.png) | ![Départ](preview/depart-image.png) |
-
----
 
 ## 🔧 Configuration
 
-Crée un fichier `config.json` et remplis avec tes propres valeurs :
-
-```json
-{
-  "token": "TON_TOKEN_DISCORD",
-  "color_principal": "#0099ff",
-  "Salon_Logs_Demarrage": "ID_DU_SALON_LOGS",
-  "Salon_Bienvenue": "ID_DU_SALON_BIENVENUE",
-  "Salon_Depart": "ID_DU_SALON_DEPART"
-}
-```
-
-> ⚠️ **Ne partage jamais ton `token` publiquement !** Le fichier `config.json` est déjà dans le `.gitignore`.
+`config.json` (ignoré par git — ton token ne partira jamais sur GitHub) :
 
 | Clé | Description |
 |---|---|
 | `token` | Token de ton bot Discord |
-| `color_principal` | Couleur principale des embeds (format hex) |
-| `Salon_Logs_Demarrage` | ID du salon où envoyer l'embed de démarrage |
-| `Salon_Bienvenue` | ID du salon où envoyer l'image de bienvenue |
-| `Salon_Depart` | ID du salon où envoyer l'image de départ |
+| `Salon_Bienvenue` | Salon où envoyer la carte de **bienvenue** |
+| `Salon_Depart` | Salon où envoyer la carte de **départ** |
+| `Salon_Logs_Demarrage` | *(optionnel)* Salon de l'embed de démarrage |
+| `color_principal` | *(optionnel)* Couleur de l'embed de démarrage (hex, ex. `#0099ff`) |
 
----
+> 💡 Au démarrage, le bot **vérifie ta config** : s'il manque `token`, `Salon_Bienvenue` ou `Salon_Depart`, il te le dit clairement et s'arrête.
 
-## 🖼️ Images personnalisées
+Place tes fonds dans `image/` (**1024 × 500 px**) : `Bienvenue.png` et `Depart.png`. L'avatar est dessiné dans le cercle en haut, le pseudo et le compteur en dessous.
 
-Place tes propres images de fond dans le dossier `image/` :
-
-| Fichier | Taille recommandée | Usage |
-|---|---|---|
-| `Bienvenue.png` | 1024 × 500 px | Fond de l'image de bienvenue |
-| `Depart.png` | 1024 × 500 px | Fond de l'image de départ |
-
-> 💡 L'avatar du membre est affiché dans un cercle centré en haut de l'image, son pseudo et le compteur de membres sont écrits en dessous.
-
----
-
-## ▶️ Lancer le bot
+## ▶️ Lancement
 
 ```bash
 npm start
 ```
 
-Le bot va :
-1. ✅ Vérifier que le token est présent dans `config.json`
-2. 🔗 Se connecter à Discord
-3. 📩 Envoyer un embed de démarrage dans le salon de logs
-4. 🎭 Démarrer la rotation du statut
+Le bot se connecte, poste son embed de démarrage, puis écoute arrivées et départs.
 
----
+## 🖼️ Aperçu
 
-## ⚠️ Dépannage
-
-| Problème | Solution |
+| Bienvenue | Départ |
 |---|---|
-| `Token Discord manquant` | Vérifie que `config.json` contient bien ton token |
-| Pas d'image de bienvenue | Vérifie que `Salon_Bienvenue` est le bon ID de salon |
-| `Unsupported image type` | Vérifie ta connexion internet (chargement de l'avatar) |
-| `Cannot find module` | Relance `npm install` |
-| Pas d'événements membre | Active **Server Members Intent** dans le Developer Portal |
+| ![Carte de bienvenue](preview/bienvenue-image.png) | ![Carte de départ](preview/depart-image.png) |
 
----
+## 🛠️ Dépannage
+
+| Symptôme | Piste |
+|---|---|
+| `[CONFIG] config.json invalide…` | Une clé manque/est vide dans `config.json` (le message dit laquelle) |
+| Pas de carte de bienvenue/départ | `Salon_Bienvenue` / `Salon_Depart` sont les **bons IDs** ? Le bot voit le salon ? |
+| Aucun événement membre | **Server Members Intent** activé dans le Developer Portal ? |
+| `Unsupported image type` | Souci de chargement de l'avatar (réseau) — réessaie |
+| `Cannot find module` | Relance `npm install` |
+
+## 🗂️ Structure
+
+```
+welcome-goodbye-cards/
+├─ index.js               # point d'entrée + validation de la config
+├─ config.example.json    # gabarit à copier vers config.json
+├─ package.json
+├─ LICENSE
+├─ events/
+│  ├─ ready.js            # embed de démarrage + statut rotatif
+│  ├─ guildMemberAdd.js   # carte de bienvenue
+│  └─ guildMemberRemove.js# carte de départ
+├─ utils/
+│  └─ canvas.js           # génération des cartes (partagé)
+├─ image/                 # fonds (Bienvenue.png / Depart.png)
+└─ preview/               # aperçus (README)
+```
+
+## 📄 Licence
+
+ISC — © 2026 MatgordFR. Voir [LICENSE](LICENSE).
 
 <div align="center">
-
-Fait avec ❤️ By: MatgordFR © 2026
-
+<sub>Fait avec ❤️ par <a href="https://github.com/MatgordFR">MatgordFR</a> · <a href="https://x.com/matgordfr">@matgordfr</a></sub>
 </div>
