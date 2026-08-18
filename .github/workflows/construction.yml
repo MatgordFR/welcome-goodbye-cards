@@ -1,0 +1,96 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONTRÔLE DE CONSTRUCTION — welcome-goodbye-cards                     posé le 18/08/2026
+#
+# ⛔ CE QUE CE WORKFLOW PROUVE
+#    1. Chaque fichier .js du dépôt est syntaxiquement valide (`node --check`).
+#       Un point-virgule oublié, une accolade en trop : le push devient rouge au
+#       lieu de casser chez la personne qui clone.
+#    2. `config.example.json` est un JSON valide. C'est le fichier que recopie
+#       quelqu'un qui installe le bot — cassé, il fait échouer l'installation de
+#       tous ceux qui passent, sans qu'aucun d'eux ne sache pourquoi.
+#    3. AUCUN fichier de configuration réel ni secret n'est versionné. Ce dépôt
+#       est PUBLIC : un `config.json` poussé par mégarde publie un jeton Discord.
+#
+# ⛔ CE QUE CE WORKFLOW NE PROUVE PAS — et il faut le dire, sinon un vert ici
+#    se lira comme « le bot marche ».
+#    Il ne lance pas le bot, ne se connecte à aucune passerelle, n'exécute aucun
+#    test : ce dépôt n'a pas de suite de tests, et pas de verrou de dépendances.
+#    Installer sans verrou prouverait l'état de npm aujourd'hui, pas celui du code.
+#    ⭐ Un contrôle honnête sur son périmètre vaut mieux qu'un vert qui déborde.
+#
+# ⛔ ACTIONS ÉPINGLÉES PAR SHA COMPLET, jamais par étiquette mobile.
+# ═══════════════════════════════════════════════════════════════════════════════
+name: Contrôle de construction
+
+on:
+  push:
+    # ⛔ `main` — vérifié sur CE dépôt. Les deux bots de production du VPS sont
+    #    sur `master` : un déclencheur écrit de mémoire aurait été faux quelque part.
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: construction-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  controle:
+    name: Syntaxe, exemple de config, absence de secret
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Installer Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+
+      - name: Vérifier la syntaxe de chaque fichier .js
+        run: |
+          n=0
+          # ⛔ On liste par `git ls-files` et pas par `find` : seuls les fichiers
+          #    VERSIONNÉS comptent, et ça exclut node_modules sans avoir à y penser.
+          while IFS= read -r f; do
+            node --check "$f" || { echo "::error file=$f::syntaxe invalide"; exit 1; }
+            n=$((n+1))
+          done < <(git ls-files '*.js')
+          # ⛔ 0 fichier contrôlé n'est pas un succès : c'est un contrôle qui n'a
+          #    rien regardé. Un dépôt JS sans .js versionné est une anomalie.
+          if [ "$n" = 0 ]; then
+            echo "::error::AUCUN fichier .js versionné trouvé — ce contrôle n'a rien vérifié, ce n'est pas un vert"
+            exit 1
+          fi
+          echo "✅ $n fichier(s) .js syntaxiquement valides"
+          echo "### ✅ $n fichier(s) .js syntaxiquement valides" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Vérifier que l'exemple de configuration est un JSON valide
+        run: |
+          f=config.example.json
+          if [ ! -f "$f" ]; then
+            echo "::error::$f MANQUANT — personne ne peut installer ce bot sans lui"
+            exit 1
+          fi
+          node -e 'JSON.parse(require("fs").readFileSync("config.example.json","utf8"))' \
+            || { echo "::error file=$f::JSON invalide"; exit 1; }
+          echo "✅ $f est un JSON valide"
+          echo "### ✅ config.example.json valide" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Refuser tout fichier de configuration réel ou secret versionné
+        run: |
+          # ⛔ Dépôt PUBLIC. `config.example.json` est attendu ; `config.json` ne
+          #    l'est jamais — il porte le jeton du bot.
+          trouve=$(git ls-files | grep -E '(^|/)(config\.json|\.env|.*\.token|.*\.pem|.*\.key)$' || true)
+          if [ -n "$trouve" ]; then
+            echo "::error::fichier(s) sensible(s) VERSIONNÉ(S) dans un dépôt public :"
+            printf '%s\n' "$trouve"
+            echo "### 🔴 fichier sensible versionné" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "✅ aucun fichier de configuration réel ni secret versionné"
+          echo "### ✅ aucun secret versionné" >> "$GITHUB_STEP_SUMMARY"
