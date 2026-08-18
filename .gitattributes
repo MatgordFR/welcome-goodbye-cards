@@ -1,0 +1,22 @@
+# ⛔ Posé le 18/08/2026 — POURQUOI CE FICHIER EXISTE
+#    RADIO_LINKS.txt de discord-radio-247 était enregistré avec des fins de ligne
+#    Windows. Chaque adresse de flux traînait donc un retour chariot invisible :
+#    copiée-collée sous Linux ou macOS, elle échouait sans qu'aucun message
+#    n'explique pourquoi. Le défaut est indétectable à l'œil — il ne se voit qu'en
+#    regardant les octets.
+#    Sans cette ligne, le prochain fichier édité sous Windows repose le problème.
+* text=auto eol=lf
+
+# Le binaire n'est jamais converti : une image dont on « corrige » les fins de
+# ligne est une image détruite.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.mp3 binary
+*.ogg binary

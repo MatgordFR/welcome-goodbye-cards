@@ -5,7 +5,7 @@
 **Un bot Discord qui génère des images personnalisées de bienvenue et de départ à chaque arrivée ou sortie de membre.**
 
 [![License: ISC](https://img.shields.io/badge/Licence-ISC-blue?style=flat-square)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A5%2018-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A5%2022-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
 [![discord.js](https://img.shields.io/badge/discord.js-v14-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.js.org)
 [![canvas](https://img.shields.io/badge/canvas-image-orange?style=flat-square)](https://www.npmjs.com/package/canvas)
 [![By MatgordFR](https://img.shields.io/badge/by-MatgordFR-111?style=flat-square&logo=github&logoColor=white)](https://github.com/MatgordFR)
@@ -38,9 +38,16 @@ Tout est automatique : le membre arrive ou part, la carte tombe dans le bon salo
 
 ## 🧩 Prérequis
 
-- [Node.js **18+**](https://nodejs.org)
+- [Node.js **22+**](https://nodejs.org)
 - Un bot créé sur le [Discord Developer Portal](https://discord.com/developers/applications)
 - L'intent privilégié **Server Members** activé (*Bot → Privileged Gateway Intents*)
+
+> ⚠️ **Pourquoi 22 et pas 18.** Ce dépôt annonçait « Node.js 18+ » jusqu'au 18/08/2026.
+> Vérifié ce jour-là sur le calendrier officiel de Node : la ligne **18 n'est plus
+> maintenue depuis le 30/04/2025**, et la **20 depuis le 30/04/2026** — plus aucun
+> correctif de sécurité sur ni l'une ni l'autre. Installer ce bot sur Node 18 revenait
+> à faire tourner un jeton Discord sur un runtime laissé sans correctif depuis 15 mois.
+
 
 > ⚠️ Sans **Server Members Intent**, le bot ne reçoit pas les arrivées/départs de membres.
 > 💡 `canvas` installe des binaires précompilés ; sur certains Linux, des libs système (Cairo/Pango) peuvent être nécessaires.
